@@ -1,6 +1,7 @@
 import sqlite3
 
 
+
 class Db:
 
     dbName = ''  
@@ -48,22 +49,60 @@ class Tb(Db):
 
 
 ##        print (sql_create_projects_table)
-        self.tbCursor.execute (sql) 
-        print ("table created") 
 
-        self.dbConnect.commit()
-
+        try:
+            self.tbCursor.execute (sql) 
+            print ("table created") 
+            self.dbConnect.commit()
+        except sqlite3.Error as e:
+            print ("error create table in database")   
 #        self.dbConnect.close()
 
 
 
-    def tbInsert(self, tbValues):
+    def tbInsert(self, tbFieldsKey, tbFieldsValue):
 #        sql = 'insert into projects (name, begin_date, end_date) VALUES (?, ?, ?)', tbValues
-        sql = "insert into "+ self.tbName + " (name, begin_date, end_date) VALUES ('name2', 'begin_date2', 'end_date2')"
+#        sqlInsert = "insert into "+ self.tbName + " (name, begin_date, end_date) VALUES ('name2', 'begin_date2', 'end_date2')"
+        
+#
+#        sqlInsert = "insert into "+ self.tbName + " (name, begin_date, end_date) VALUES ("+ tbValues +")"
+#        sqlInsert = "insert into "+ self.tbName + " (id " + tbFieldsKey + ") VALUES ( ?, ?, ?, ? ), " + tbFieldsValue 
+
+        tbFieldsValueCount = len(tbFieldsValue)
+        print (tbFieldsValueCount)
+        questionMark = '?' 
+#        for x in tbFieldsValueCount:
+#        for x+1 in tbFieldsValue:
+ 
+        for i in range(1, len(tbFieldsValue)):
+            questionMark = questionMark + " ,?"               
+
+
+
+        print (questionMark)
+
+#        sqlInsert = "insert into "+ self.tbName + " (" + tbFieldsKey + ") VALUES (?, ?, ?)"
+        sqlInsert = "insert into "+ self.tbName + " (" + tbFieldsKey + ") VALUES ( " + questionMark +")"
+        print (sqlInsert)
+#        print ("after  insert\n")
+#        print (tbFieldsValue)
+#        print ("\nafter  tbFuîeld\n")
+         
+#        tbFieldsVal = tbFieldsValue
+#        print (tbFieldsVal)
+#        name = "n123"
+#        begin_date = "bd123"
+#        end_date = "ed123"
+
+        name = tbFieldsValue[0]
+        begin_date = tbFieldsValue[1]
+        end_date = tbFieldsValue[2]
+        data_tuple = (name, begin_date, end_date)
 
 
         try:
-            self.tbCursor.execute(sql)
+#            self.tbCursor.execute(sqlInsert, tbFieldsValue)
+            self.tbCursor.execute(sqlInsert, data_tuple)
             self.dbConnect.commit()
         except sqlite3.Error as e:
             print ("error insert to database")   
@@ -72,10 +111,42 @@ class Tb(Db):
 
     def tbList(self):
 #        sql = "SELECT * FROM "+ self.tbName
-        sql = "SELECT * FROM tb2"
-        print  (sql)        
-        for row in self.tbCursor.execute(sql):
+        sqlList = "SELECT * FROM tb2"
+        print  (sqlList)        
+        for row in self.tbCursor.execute(sqlList):
             print(row)
+
+
+
+#    def tbInsert(self, tbFieldsKey, tbFieldsValue):
+
+
+    def tbDelete(self, ids):
+#        sqlDelete = 'DELETE FROM self.tbName WHERE id=?'        
+#        sqlDelete = 'DELETE FROM tb2 WHERE id=?'        
+#        sqlDelete = 'DELETE FROM ' + self.tbName + ' WHERE id=3'        
+        sqlDelete = "DELETE FROM "+ self.tbName+" WHERE id=?"        
+        try:
+
+            print ( sqlDelete)
+            print (ids)           
+#            self.tbCursor.execute(sqlDelete, id)
+#            self.tbCursor.execute(sqlDelete, 2)
+#            self.tbCursor.execute(sqlDelete, id)
+            self.tbCursor.execute(sqlDelete, (ids,))
+#            self.tbCursor.execute("DELETE FROM tb2 WHERE id=?", (ids,))
+#            self.tbCursor.execute("DELETE FROM tb2 WHERE id=5")
+
+#            self.cursor.execute(sqlDelete, (id,))
+            self.dbConnect.commit()
+
+        except sqlite3.Error as e:
+            print ("error delete to database")   
+
+
+
+
+'''
 
 #    def createTable('tbDict1')
         
@@ -95,3 +166,6 @@ tb.createTable(tbFieldsNameType)
 tb.tbInsert()
 
 tb.tbList()
+
+
+'''
